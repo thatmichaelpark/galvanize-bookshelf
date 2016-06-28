@@ -6,6 +6,7 @@
     "test": "test"
   },
   "scripts": {
+    "knex": "knex",
     "test": "mocha"
   },
   "license": "MIT",
