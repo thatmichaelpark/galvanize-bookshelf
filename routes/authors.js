@@ -93,6 +93,18 @@ router.get('/authors/:id', (req, res, next) => {
   });
 });
 
+router.get('/authors/:id/books', (req, res, next) => {
+  knex('books')
+  .where('author_id', req.params.id)
+  .orderBy('id')
+  .then((books) => {
+    res.send(books);
+  })
+  .catch((err) => {
+    next(err);
+  });
+});
+
 router.post('/authors', (req, res, next) => {
   knex('authors')
   .insert(req.body, '*')
