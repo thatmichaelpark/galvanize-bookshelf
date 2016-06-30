@@ -22,7 +22,11 @@ router.get('/users/books/:bookId', (req, res, next) => {
   .where('users_books.user_id', req.session.user.id)
   .where('books.id', req.params.bookId)
   .then((books) => {
-    res.send(books);
+    if (books.length) {
+      res.send(books[0]);
+    } else {
+      res.sendStatus(404);
+    }
   })
   .catch((err) => {
     next(err);
@@ -38,6 +42,28 @@ router.post('/users/books/:bookId', (req, res, next) => {
   .catch((err) => {
     next(err);
   });
+});
+
+router.delete('/users/books/:bookId', (req, res, next) => {
+  knex('users_books')
+  .where('book_id', req.params.bookId)
+  .where('user_id', req.session.user.id)
+  .first()
+  .then((user_book) => {
+
+    knex('users_books')
+    .del()
+    .where('book_id', req.params.bookId)
+    .where('user_id', req.session.user.id)
+    .then(() => {
+      delete user_book.id;
+      res.send(user_book);
+    })
+
+  })
+  .catch((err) => {
+    next(err);
+  })
 });
 
 module.exports = router;
