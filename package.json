@@ -5,6 +5,7 @@
   "scripts": {
     "knex": "knex",
     "test": "mocha",
+    "nf": "nf start",
     "heroku-postbuild": "knex migrate:latest"
   },
   "license": "MIT",
