@@ -29,9 +29,10 @@ router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
   .innerJoin('users_books', 'users_books.book_id', 'books.id')
   .where('users_books.user_id', req.session.user.id)
   .where('books.id', req.params.bookId)
-  .then((books) => {
-    if (books.length) {
-      res.send(books[0]);
+  .first()
+  .then((book) => {
+    if (book) {
+      res.send(book);
     } else {
       res.sendStatus(404);
     }
@@ -42,10 +43,22 @@ router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
 });
 
 router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
-  knex('users_books')
-  .insert({user_id: req.session.user.id, book_id: req.params.bookId}, '*')
-  .then((results) => {
-    res.send(results[0]);
+
+  if (Number.isNaN(req.params.bookId)) {
+    return next();
+  }
+  knex('books')
+    .where('id', req.params.bookId)
+    .first()
+    .then((book) => {
+      if (!book) {
+        return next();
+      }
+      return knex('users_books')
+      .insert({user_id: req.session.user.id, book_id: req.params.bookId}, '*')
+      .then((results) => {
+        res.send(results[0]);
+    })
   })
   .catch((err) => {
     next(err);
@@ -58,7 +71,9 @@ router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
   .where('user_id', req.session.user.id)
   .first()
   .then((user_book) => {
-
+    if (!user_book) {
+      return next();
+    }
     knex('users_books')
     .del()
     .where('book_id', req.params.bookId)
