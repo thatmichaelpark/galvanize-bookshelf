@@ -4,7 +4,15 @@ const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
 
-router.get('/users/books', (req, res, next) => {
+const checkAuth = function (req, res, next) {
+  if (!req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  next();
+}
+
+router.get('/users/books', checkAuth, (req, res, next) => {
   knex('books')
   .innerJoin('users_books', 'users_books.book_id', 'books.id')
   .where('users_books.user_id', req.session.user.id)
@@ -16,7 +24,7 @@ router.get('/users/books', (req, res, next) => {
   });
 });
 
-router.get('/users/books/:bookId', (req, res, next) => {
+router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
   knex('books')
   .innerJoin('users_books', 'users_books.book_id', 'books.id')
   .where('users_books.user_id', req.session.user.id)
@@ -33,7 +41,7 @@ router.get('/users/books/:bookId', (req, res, next) => {
   });
 });
 
-router.post('/users/books/:bookId', (req, res, next) => {
+router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
   knex('users_books')
   .insert({user_id: req.session.user.id, book_id: req.params.bookId}, '*')
   .then((results) => {
@@ -44,7 +52,7 @@ router.post('/users/books/:bookId', (req, res, next) => {
   });
 });
 
-router.delete('/users/books/:bookId', (req, res, next) => {
+router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
   knex('users_books')
   .where('book_id', req.params.bookId)
   .where('user_id', req.session.user.id)
