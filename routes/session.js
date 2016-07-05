@@ -24,7 +24,7 @@ router.post('/session', (req, res, next) => {
       if (!isMatch) {
         return res.sendStatus(401);
       }
-      req.session.user = user;
+      req.session.userId = user.id;
       res.cookie('loggedIn', true);
       res.sendStatus(200);
     });

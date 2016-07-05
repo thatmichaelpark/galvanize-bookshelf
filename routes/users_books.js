@@ -5,7 +5,7 @@ const router = express.Router(); // eslint-disable-line new-cap
 const knex = require('../knex');
 
 const checkAuth = function(req, res, next) {
-  if (!req.session.user) {
+  if (!req.session.userId) {
     return res.sendStatus(401);
   }
 
@@ -15,7 +15,7 @@ const checkAuth = function(req, res, next) {
 router.get('/users/books', checkAuth, (req, res, next) => {
   knex('books')
   .innerJoin('users_books', 'users_books.book_id', 'books.id')
-  .where('users_books.user_id', req.session.user.id)
+  .where('users_books.user_id', req.session.userId)
   .then((books) => {
     res.send(books);
   })
@@ -27,7 +27,7 @@ router.get('/users/books', checkAuth, (req, res, next) => {
 router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
   knex('books')
   .innerJoin('users_books', 'users_books.book_id', 'books.id')
-  .where('users_books.user_id', req.session.user.id)
+  .where('users_books.user_id', req.session.userId)
   .where('books.id', req.params.bookId)
   .first()
   .then((book) => {
@@ -57,7 +57,7 @@ router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
 
       /* eslint-disable camelcase */
       return knex('users_books')
-      .insert({ user_id: req.session.user.id, book_id: req.params.bookId }, '*')
+      .insert({ user_id: req.session.userId, book_id: req.params.bookId }, '*')
       .then((results) => {
         res.send(results[0]);
       });
@@ -70,7 +70,7 @@ router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
 router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
   knex('users_books')
   .where('book_id', req.params.bookId)
-  .where('user_id', req.session.user.id)
+  .where('user_id', req.session.userId)
   .first()
   .then((user_book) => {
     if (!user_book) {
@@ -79,7 +79,7 @@ router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
     knex('users_books')
     .del()
     .where('book_id', req.params.bookId)
-    .where('user_id', req.session.user.id)
+    .where('user_id', req.session.userId)
     .then(() => {
       delete user_book.id;
       res.send(user_book);
