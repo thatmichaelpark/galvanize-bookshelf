@@ -1,12 +1,13 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // eslint-disable-line new-cap
 const bcrypt = require('bcrypt');
 const knex = require('../knex');
 
 router.post('/users', (req, res, next) => {
   const user = req.body;
+
   if (!user.first_name || user.first_name.trim() === '') {
     return res
       .status(400)
@@ -44,17 +45,18 @@ router.post('/users', (req, res, next) => {
         .send('Email already exists');
     }
 
-    bcrypt.hash(req.body.password, 12, (err, hashed_password) => {
-      if (err) {
-        return next(err);
+    // eslint-disable-next-line camelcase
+    bcrypt.hash(req.body.password, 12, (bcryptErr, hashed_password) => {
+      if (bcryptErr) {
+        return next(bcryptErr);
       }
 
       knex('users')
       .insert({
-        first_name: user.first_name,
-        last_name: user.last_name,
+        first_name: user.first_name,  // eslint-disable-line camelcase
+        last_name: user.last_name,    // eslint-disable-line camelcase
         email: user.email,
-        hashed_password
+        hashed_password               // eslint-disable-line camelcase
       })
       .then(() => {
         res.sendStatus(200);

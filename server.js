@@ -16,6 +16,8 @@ const authors = require('./routes/authors');
 const books = require('./routes/books');
 const session = require('./routes/session');
 const users = require('./routes/users');
+
+// eslint-disable-next-line camelcase
 const users_books = require('./routes/users_books');
 
 const app = express();
@@ -24,6 +26,7 @@ app.disable('x-powered-by');
 
 if (process.env.NODE_ENV !== 'test') {
   const morgan = require('morgan');
+
   app.use(morgan('short'));
 }
 

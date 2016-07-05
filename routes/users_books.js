@@ -1,16 +1,16 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // eslint-disable-line new-cap
 const knex = require('../knex');
 
-const checkAuth = function (req, res, next) {
+const checkAuth = function(req, res, next) {
   if (!req.session.user) {
     return res.sendStatus(401);
   }
 
   next();
-}
+};
 
 router.get('/users/books', checkAuth, (req, res, next) => {
   knex('books')
@@ -33,7 +33,8 @@ router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
   .then((book) => {
     if (book) {
       res.send(book);
-    } else {
+    }
+    else {
       res.sendStatus(404);
     }
   })
@@ -43,7 +44,6 @@ router.get('/users/books/:bookId', checkAuth, (req, res, next) => {
 });
 
 router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
-
   if (Number.isNaN(req.params.bookId)) {
     return next();
   }
@@ -54,15 +54,17 @@ router.post('/users/books/:bookId', checkAuth, (req, res, next) => {
       if (!book) {
         return next();
       }
+
+      /* eslint-disable camelcase */
       return knex('users_books')
-      .insert({user_id: req.session.user.id, book_id: req.params.bookId}, '*')
+      .insert({ user_id: req.session.user.id, book_id: req.params.bookId }, '*')
       .then((results) => {
         res.send(results[0]);
+      });
     })
-  })
-  .catch((err) => {
-    next(err);
-  });
+    .catch((err) => {
+      next(err);
+    });
 });
 
 router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
@@ -81,12 +83,11 @@ router.delete('/users/books/:bookId', checkAuth, (req, res, next) => {
     .then(() => {
       delete user_book.id;
       res.send(user_book);
-    })
-
+    });
   })
   .catch((err) => {
     next(err);
-  })
+  });
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const router = express.Router();  // eslint-disable-line new-cap
 const knex = require('../knex');
 
 router.get('/books', (req, res, next) => {
@@ -54,17 +54,17 @@ router.delete('/books/:id', (req, res, next) => {
   knex('books')
   .where('id', req.params.id)
   .first()
-  .then((book) => {
+  .then((book) =>
 
-    return knex('books')
+    knex('books')
     .del()
     .where('id', req.params.id)
     .then(() => {
       delete book.id;
       res.send(book);
-    });
+    })
 
-  })
+  )
   .catch((err) => {
     next(err);
   });
